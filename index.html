@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Лазерная резка металла — точно, быстро, под заказ</title>
+<style>
+  :root {
+    --ink: #14181d;
+    --muted: #5b6570;
+    --line: #e4e8ec;
+    --bg: #ffffff;
+    --soft: #f5f7f9;
+    --accent: #d9480f;      /* металлический акцент */
+    --accent-dark: #b83c0a;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  section { padding: 80px 0; }
+
+  h1, h2, h3 { line-height: 1.2; font-weight: 700; letter-spacing: -0.02em; }
+
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    max-width: 620px;
+    margin-bottom: 48px;
+    font-size: 1.05rem;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+    gap: 20px;
+  }
+  .logo {
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-phone {
+    font-weight: 700;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .nav-phone:hover { color: var(--accent); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 90px 0 80px; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: #fff2eb;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+  }
+  .hero h1 {
+    font-size: 3.1rem;
+    margin-bottom: 22px;
+  }
+  .hero p {
+    font-size: 1.15rem;
+    color: var(--muted);
+    margin-bottom: 34px;
+    max-width: 520px;
+  }
+  .btn-row { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-block;
+    padding: 15px 32px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .btn-ghost:hover { border-color: var(--ink); }
+
+  /* Hero visual — имитация металлической панели */
+  .hero-visual {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+    background:
+      repeating-linear-gradient(135deg, #2a2f36 0px, #2a2f36 2px, #32383f 2px, #32383f 4px),
+      linear-gradient(145deg, #23282e, #3a4149);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(217,72,15,0.28), transparent 55%);
+  }
+  .cut-shape {
+    width: 62%;
+    height: 62%;
+    border: 2px dashed rgba(217,72,15,0.85);
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 60px rgba(217,72,15,0.35);
+  }
+  .cut-shape::before {
+    content: "";
+    position: absolute;
+    inset: 18%;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 8px;
+  }
+
+  /* ---------- Услуги / преимущества ---------- */
+  .features { background: var(--soft); }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: #fff;
+    padding: 36px 30px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(20,24,29,0.07);
+  }
+  .card-num {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+  .card p { color: var(--muted); font-size: 0.98rem; }
+
+  /* ---------- Материалы ---------- */
+  .materials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .material {
+    padding: 24px;
+    background: var(--soft);
+    border-radius: var(--radius);
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .material:hover { border-color: var(--accent); }
+  .material small {
+    display: block;
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  /* ---------- Контакты ---------- */
+  .contacts { background: var(--ink); color: #fff; }
+  .contacts .section-title { color: #fff; }
+  .contacts .section-sub { color: #a8b2bd; }
+  .contacts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .contact-item { margin-bottom: 28px; }
+  .contact-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8b96a1;
+    margin-bottom: 6px;
+  }
+  .contact-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .contact-value:hover { color: var(--accent); }
+  .contact-value.small { font-size: 1.05rem; font-weight: 400; color: #c3ccd5; }
+
+  .form { display: flex; flex-direction: column; gap: 14px; }
+  .form input,
+  .form textarea {
+    padding: 15px 16px;
+    border: 1px solid #333c45;
+    border-radius: var(--radius);
+    background: #1e242b;
+    color: #fff;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form input:focus,
+  .form textarea:focus { border-color: var(--accent); }
+  .form input::placeholder,
+  .form textarea::placeholder { color: #7c8792; }
+  .form textarea { resize: vertical; min-height: 90px; }
+  .form .btn { margin-top: 6px; }
+  .form-note {
+    font-size: 0.82rem;
+    color: #8b96a1;
+    margin-top: 4px;
+  }
+  .form-success {
+    display: none;
+    padding: 16px;
+    background: #1f3327;
+    border: 1px solid #2f6b45;
+    border-radius: var(--radius);
+    color: #b5e6c8;
+    font-size: 0.95rem;
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 28px 0;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- Адаптив ---------- */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { max-width: 420px; }
+    .hero h1 { font-size: 2.4rem; }
+    .contacts-grid { grid-template-columns: 1fr; gap: 40px; }
+  }
+  @media (max-width: 680px) {
+    section { padding: 56px 0; }
+    .nav-links { display: none; }
+    .hero { padding: 56px 0; }
+    .hero h1 { font-size: 2rem; }
+    .hero p { font-size: 1.05rem; }
+    .section-title { font-size: 1.6rem; }
+    .btn { width: 100%; text-align: center; }
+    .btn-row { flex-direction: column; }
+    .nav-phone { font-size: 0.9rem; }
+    .logo { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <div class="logo">МЕТАЛЛ<span>РЕЗ</span></div>
+    <ul class="nav-links">
+      <li><a href="#services">Услуги</a></li>
+      <li><a href="#materials">Материалы</a></li>
+      <li><a href="#contacts">Контакты</a></li>
+    </ul>
+    <a href="tel:+79000000000" class="nav-phone">+7 (900) 000-00-00</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge">Лазерная резка металла</span>
+      <h1>Точная резка металла под ваш чертёж</h1>
+      <p>Режем листовой металл на современном лазерном оборудовании. Точность до 0,1 мм, срок от 1 дня, работа с единичными заказами и сериями.</p>
+      <div class="btn-row">
+        <a href="#contacts" class="btn btn-primary">Оставить заявку</a>
+        <a href="tel:+79000000000" class="btn btn-ghost">Позвонить</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="cut-shape"></div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="services">
+  <div class="container">
+    <h2 class="section-title">Что мы делаем</h2>
+    <p class="section-sub">Полный цикл работ с металлом — от раскроя по чертежу до готовых деталей.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="card-num">01</div>
+        <h3>Лазерная резка</h3>
+        <p>Раскрой листового металла по вашим чертежам (DXF, DWG, CDR). Точность до 0,1 мм, чистый рез без деформаций.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <h3>Серийные заказы</h3>
+        <p>Берём как единичные детали, так и серии от 1 до 10 000 шт. Стабильное качество на каждом изделии.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <h3>Гибка и обработка</h3>
+        <p>Гибка, зачистка кромок и подготовка деталей под дальнейшую сборку или покраску.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="materials">
+  <div class="container">
+    <h2 class="section-title">Материалы</h2>
+    <p class="section-sub">Работаем с распространёнными металлами. Толщина и наличие уточняйте по телефону.</p>
+    <div class="materials-grid">
+      <div class="material">Нержавеющая сталь<small>до 6 мм</small></div>
+      <div class="material">Углеродистая сталь<small>до 12 мм</small></div>
+      <div class="material">Алюминий<small>до 6 мм</small></div>
+      <div class="material">Латунь<small>до 4 мм</small></div>
+      <div class="material">Медь<small>до 4 мм</small></div>
+      <div class="material">Оцинковка<small>до 3 мм</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="contacts" id="contacts">
+  <div class="container">
+    <h2 class="section-title">Свяжитесь с нами</h2>
+    <p class="section-sub">Пришлите чертёж или опишите задачу — рассчитаем стоимость и сроки в течение дня.</p>
+    <div class="contacts-grid">
+
+      <div>
+        <div class="contact-item">
+          <div class="contact-label">Телефон</div>
+          <a href="tel:+79000000000" class="contact-value">+7 (900) 000-00-00</a>
+        </div>
+        <div class="contact-item">
+          <div class="contact-label">Email</div>
+          <a href="mailto:info@example.ru" class="contact-value">info@example.ru</a>
+        </div>
+        <div class="contact-item">
+          <div class="contact-label">Адрес</div>
+          <div class="contact-value small">г. Москва, ул. Промышленная, 12, цех 3</div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-label">Режим работы</div>
+          <div class="contact-value small">Пн–Пт: 9:00–18:00<br>Сб: 10:00–15:00</div>
+        </div>
+      </div>
+
+      <form class="form" id="lead-form">
+        <input type="text" name="name" placeholder="Ваше имя" required>
+        <input type="tel" name="phone" placeholder="Телефон" required>
+        <input type="email" name="email" placeholder="Email (необязательно)">
+        <textarea name="message" placeholder="Опишите задачу: материал, толщина, количество"></textarea>
+        <button type="submit" class="btn btn-primary">Отправить заявку</button>
+        <div class="form-note">Нажимая кнопку, вы соглашаетесь на обработку персональных данных.</div>
+        <div class="form-success" id="form-success">
+          Спасибо! Заявка отправлена — мы свяжемся с вами в ближайшее время.
+        </div>
+      </form>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div>© 2025 МЕТАЛЛРЕЗ. Лазерная резка металла.</div>
+    <div>ИНН 0000000000 · г. Москва</div>
+  </div>
+</footer>
+
+<script>
+  // Простая обработка формы без бэкенда.
+  // Замените alert на реальную отправку (fetch на ваш сервер / Telegram-бот / Formspree).
+  const form = document.getElementById('lead-form');
+  const success = document.getElementById('form-success');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    // Здесь можно собрать данные:
+    // const data = new FormData(form);
+    // fetch('https://your-endpoint', { method: 'POST', body: data });
+
+    form.querySelectorAll('input, textarea, button').forEach(el => el.disabled = true);
+    success.style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
